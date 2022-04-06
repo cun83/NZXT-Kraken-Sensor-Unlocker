@@ -12,6 +12,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
                 await device.AccessDevice();
                 Console.WriteLine("Done! You can start NZXT CAM now.");
 
+
                 Console.WriteLine();
                 Console.WriteLine("Press any key to exit.");
 
