@@ -11,14 +11,21 @@ namespace MyApp
 {
     internal class DeviceAccessorHid : IDisposable
     {
-        private IDevice trezorDevice;
+        private readonly int productId;
+        private IDevice krakenDevice;
 
-        public async Task AccessDevice()
+        public DeviceAccessorHid(int productId = 0x3008) //Z53, Z63, Z73 family. Use 0x2007 foo X53, X63 or X73 family. Ref: https://github.com/liquidctl/liquidctl/blob/main/liquidctl/driver/kraken3.py
+        {
+            this.productId = productId;
+        }
+
+        public async Task<bool> AccessDevice()
         {
             //Create logger factory that will pick up all logs and output them in the debug output window
             var loggerFactory = LoggerFactory.Create((builder) =>
             {
-                builder.SetMinimumLevel(LogLevel.Trace);
+                //builder.SetMinimumLevel(LogLevel.Trace);
+                builder.SetMinimumLevel(LogLevel.Error);
                 builder.AddConsole();
             });
 
@@ -28,7 +35,7 @@ namespace MyApp
 
             //Register the factory for creating Hid devices. 
             var hidFactory =
-                new FilterDeviceDefinition(vendorId: 0x1E71, productId: 0x3008, label: "NZXT Kraken X (X53, X63 or X73)", usagePage: null)//, usagePage: 65280)
+                new FilterDeviceDefinition(vendorId: 0x1E71, productId: 0x3008, label: "NZXT Kraken (X53, X63, X73 / Z53, Z63, Z73)", usagePage: null)//, usagePage: 65280)
                 .CreateWindowsHidDeviceFactory(loggerFactory);
 
             //Register the factory for creating Usb devices.
@@ -49,14 +56,14 @@ namespace MyApp
             {
                 //No devices were found
                 loggerFactory.CreateLogger<object>().LogCritical("!!!NO DEVICE FOUND!!!");
-                return;
+                return false;
             }
 
             //Get the device from its definition
-            this.trezorDevice = await hidFactory.GetDeviceAsync(deviceDefinitions.First()).ConfigureAwait(false);
+            this.krakenDevice = await hidFactory.GetDeviceAsync(deviceDefinitions.First()).ConfigureAwait(false);
 
             //Initialize the device
-            await trezorDevice.InitializeAsync().ConfigureAwait(false);
+            await krakenDevice.InitializeAsync().ConfigureAwait(false);
 
             //Create the request buffer
             var buffer = new byte[65];
@@ -66,16 +73,17 @@ namespace MyApp
             buffer[3] = 0x23;
 
             //Write and read the data to the device
-            var readBuffer = await trezorDevice.ReadAsync().ConfigureAwait(false);
-        
+            var readBuffer = await krakenDevice.ReadAsync().ConfigureAwait(false);
+
+            return true;
         }
 
         public void Dispose()
         {
-            if(this.trezorDevice != null)
+            if(this.krakenDevice != null)
             {
-                this.trezorDevice.Close();
-                this.trezorDevice.Dispose();
+                this.krakenDevice.Close();
+                this.krakenDevice.Dispose();
             }
         }
     }

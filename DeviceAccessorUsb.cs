@@ -17,7 +17,8 @@ namespace MyApp
             //Create logger factory that will pick up all logs and output them in the debug output window
             var loggerFactory = LoggerFactory.Create((builder) =>
             {
-                builder.SetMinimumLevel(LogLevel.Trace);
+                //builder.SetMinimumLevel(LogLevel.Trace);
+                builder.SetMinimumLevel(LogLevel.Error);
                 builder.AddConsole();
             });
 
