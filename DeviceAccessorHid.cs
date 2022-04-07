@@ -72,10 +72,18 @@ namespace MyApp
             buffer[2] = 0x23;
             buffer[3] = 0x23;
 
-            //Write and read the data to the device
-            var readBuffer = await krakenDevice.ReadAsync().ConfigureAwait(false);
+            //TODO: needed for tool to work? seems to block if kraken not initialized
+            await ReadDataAsync().ConfigureAwait(false);
 
             return true;
+        }
+
+        public async Task<TransferResult> ReadDataAsync()
+        {
+
+            //Write and read the data to the device
+            TransferResult readBuffer = await krakenDevice.ReadAsync().ConfigureAwait(false);
+            return readBuffer;
         }
 
         public void Dispose()
