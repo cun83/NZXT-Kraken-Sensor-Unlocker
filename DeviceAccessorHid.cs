@@ -11,10 +11,10 @@ namespace MyApp
 {
     internal class DeviceAccessorHid : IDisposable
     {
-        private readonly int productId;
+        private readonly uint productId;
         private IDevice krakenDevice;
 
-        public DeviceAccessorHid(int productId = 0x3008) //Z53, Z63, Z73 family. Use 0x2007 foo X53, X63 or X73 family. Ref: https://github.com/liquidctl/liquidctl/blob/main/liquidctl/driver/kraken3.py
+        public DeviceAccessorHid(uint productId = 0x3008) //Z53, Z63, Z73 family. Use 0x2007 foo X53, X63 or X73 family. Ref: https://github.com/liquidctl/liquidctl/blob/main/liquidctl/driver/kraken3.py
         {
             this.productId = productId;
         }
@@ -31,26 +31,13 @@ namespace MyApp
 
             //----------------------
 
-            // This is Windows specific code. You can replace this with your platform of choice or put this part in the composition root of your app
-
             //Register the factory for creating Hid devices. 
             var hidFactory =
-                new FilterDeviceDefinition(vendorId: 0x1E71, productId: 0x3008, label: "NZXT Kraken (X53, X63, X73 / Z53, Z63, Z73)", usagePage: null)//, usagePage: 65280)
+                new FilterDeviceDefinition(vendorId: 0x1E71, productId: productId, label: "NZXT Kraken (X53, X63, X73 / Z53, Z63, Z73)", usagePage: null)//, usagePage: 65280)
                 .CreateWindowsHidDeviceFactory(loggerFactory);
 
-            //Register the factory for creating Usb devices.
-            //var usbFactory =
-            //    new FilterDeviceDefinition(vendorId: 0x1E71, productId: 0x3008, label: "NZXT KrakenZ Device")
-            //    .CreateWindowsUsbDeviceFactory(loggerFactory);
-
-            //----------------------
-
-            //Join the factories together so that it picks up either the Hid or USB device
-            //var factories = hidFactory.Aggregate(usbFactory);
-            var factories = hidFactory;
-
             //Get connected device definitions
-            var deviceDefinitions = (await factories.GetConnectedDeviceDefinitionsAsync().ConfigureAwait(false)).ToList();
+            var deviceDefinitions = (await hidFactory.GetConnectedDeviceDefinitionsAsync().ConfigureAwait(false)).ToList();
 
             if (deviceDefinitions.Count == 0)
             {
@@ -65,20 +52,13 @@ namespace MyApp
             //Initialize the device
             await krakenDevice.InitializeAsync().ConfigureAwait(false);
 
-            //Create the request buffer
-            var buffer = new byte[65];
-            buffer[0] = 0x00;
-            buffer[1] = 0x3f;
-            buffer[2] = 0x23;
-            buffer[3] = 0x23;
-
-            //TODO: needed for tool to work? seems to block if kraken not initialized
-            await ReadDataAsync().ConfigureAwait(false);
+            //TODO: needed for tool to work? seems to block until kraken gets initialized by NZXT CAM or HWiNFO
+            await UpdateDataAsync().ConfigureAwait(false);
 
             return true;
         }
 
-        public async Task<TransferResult> ReadDataAsync()
+        public async Task<TransferResult> UpdateDataAsync()
         {
 
             //Write and read the data to the device

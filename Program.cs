@@ -14,7 +14,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
         {
             //using (var device = new DeviceAccessorHid(0x2007)) // X series
             {
-                //using (var device2 = new DeviceAccessorHid(0x2007)) // X series //works for Z series, too???
+                //using (var device2 = new DeviceAccessorHid(0x2007)) // X series 
                 using (var device2 = new DeviceAccessorHid()) // Z series
                 {
                     Console.WriteLine("Happily provided by cun83. Big thanks to HWiNFO's Martin for the amazing HWiNFO!");
@@ -34,7 +34,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
                     while (!Console.KeyAvailable)
                     {
-                        var result = await device2.ReadDataAsync();
+                        var result = await device2.UpdateDataAsync();
                         var data = result.Data;
 
                         UpdateDataCounter(data[0]);
