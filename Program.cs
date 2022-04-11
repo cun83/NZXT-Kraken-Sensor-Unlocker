@@ -34,6 +34,7 @@ namespace cun83.NzxtKrakenSensorUnlocker
             {
                 h.AddEnumValuesToHelpText = true;
                 h.Copyright = $"Copyright (C) {DateTime.Now.Year} cun83";
+                h.Heading += "\r\n   Run HWiNFO and NZXT CAM at the same time! Start this tool BEFORE starting NZXT CAM.";
                 return h;
             });
             Console.WriteLine(helpText);

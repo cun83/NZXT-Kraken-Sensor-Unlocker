@@ -22,15 +22,15 @@ namespace cun83.NzxtKrakenSensorUnlocker
         public uint MeasurementRefreshInterval { get; set; } = 1000;
 
         /// <summary>
-        /// Automatically start reading sensors after startup? Will prompt for keypress if disabled.
+        /// Automatically start reading sensors after startup? Will prompt for keypress if disabled. This will interfere with auto close.
         /// </summary>
-        [Option('a', nameof(AutoStartReadingMeasurement), Required = false, Default = true, HelpText = "Automatically start reading sensors after startup? Will prompt for keypress if disabled.")]
+        [Option('a', nameof(AutoStartReadingMeasurement), Required = false, Default = true, HelpText = "Automatically start reading sensors after startup? Will prompt for keypress if disabled. This will interfere with auto close.")]
         public bool? AutoStartReadingMeasurement { get; set; } = true;
 
         /// <summary>
         /// Automatically exit after n seconds. Useful for running this program via autostart, to exit after a while once CAM has started in non-greedy-mode. Use 0 to disable autoclose.
         /// </summary>
-        [Option('c', nameof(AutoCloseAfterSeconds), Required = false, Default = (uint)0, HelpText = "utomatically exit after n seconds. Useful for running this program via autostart, to exit after a while once CAM has started in non-greedy-mode. Use 0 to disable autoclose.")]
+        [Option('c', nameof(AutoCloseAfterSeconds), Required = false, Default = (uint)0, HelpText = "Automatically exit after n seconds. Useful for running this program via autostart, to exit after a while once CAM has started in non-greedy-mode. Use 0 to disable autoclose.")]
         public uint AutoCloseAfterSeconds { get; set; } = 0;
 
         /// <summary>
