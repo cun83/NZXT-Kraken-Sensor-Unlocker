@@ -16,16 +16,16 @@ namespace cun83.NzxtKrakenSensorUnlocker
         public KrakenDeviceFamily KrakenDeviceFamily { get; internal set; }
 
         /// <summary>
+        /// Interval to refresh the automatic measurements, in milliseconds. Set to 0 to disable measurements (this will disable output of raw data as well).
+        /// </summary>
+        [Option('i', nameof(MeasurementRefreshInterval), Required = false, Default = (uint)1000, HelpText = "Interval to refresh the automatic measurements, in milliseconds.Set to 0 to disable measurements(this will disable output of raw data as well).")]
+        public uint MeasurementRefreshInterval { get; set; } = 1000;
+
+        /// <summary>
         /// Automatically start reading sensors after startup? Will prompt for keypress if disabled.
         /// </summary>
         [Option('a', nameof(AutoStartReadingMeasurement), Required = false, Default = true, HelpText = "Automatically start reading sensors after startup? Will prompt for keypress if disabled.")]
         public bool? AutoStartReadingMeasurement { get; set; } = true;
-
-        /// <summary>
-        /// Interval to refresh the automatic measurements, in milliseconds.
-        /// </summary>
-        [Option('i', nameof(MeasurmentRefreshInterval), Required = false, Default = 1000, HelpText = "Interval to refresh the automatic measurements, in milliseconds.")]
-        public int MeasurmentRefreshInterval { get; set; } = 1000;
 
         /// <summary>
         /// Clears console output on every refresh. Useful for measurement/raw data display. Disable to read debug logs.

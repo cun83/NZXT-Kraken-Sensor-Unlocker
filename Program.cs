@@ -32,6 +32,7 @@ namespace cun83.NzxtKrakenSensorUnlocker
             HelpText? helpText = HelpText.AutoBuild(parserResult, h =>
             {
                 h.AddEnumValuesToHelpText = true;
+                h.Copyright = $"Copyright (C) {DateTime.Now.Year} cun83";
                 return h;
             });
             Console.WriteLine(helpText);
@@ -47,6 +48,7 @@ namespace cun83.NzxtKrakenSensorUnlocker
 
                 await kraken.ConnectToDeviceAsync();
                 Console.WriteLine("Done, everything is set up! After NZXT CAM has started completely you may exit this program.");
+                Console.WriteLine("Press any key to exit.");
 
 
                 Console.WriteLine();
@@ -59,26 +61,30 @@ namespace cun83.NzxtKrakenSensorUnlocker
 
                 while (!Console.KeyAvailable)
                 {
-                    await kraken.ReadDataAsync();
-                    byte[]? data = kraken.RawData.Data;
-                    KrakenData? measurements = kraken.KrakenData;
-
-                    if (settings.ClearTerminalOnRefresh.Value)
+                    if (settings.MeasurementRefreshInterval > 0)
                     {
-                        Console.Clear();
-                    }
+                        await kraken.ReadDataAsync();
+                        byte[]? data = kraken.RawData.Data;
+                        KrakenData? measurements = kraken.KrakenData;
 
-                    measurementWriter.Print(measurements);
+                        if (settings.ClearTerminalOnRefresh.Value)
+                        {
+                            Console.Clear();
+                        }
 
-                    if (settings.ShowRawDataOutput.Value)
-                    {
+                        measurementWriter.Print(measurements);
+
+                        if (settings.ShowRawDataOutput.Value)
+                        {
+                            Console.WriteLine();
+                            rawDataWriter.PrintRawDataAsMatrix(data);
+                        }
+
                         Console.WriteLine();
-                        rawDataWriter.PrintRawDataAsMatrix(data);
+                        Console.WriteLine("Press any key to exit.");
                     }
 
-                    Console.WriteLine();
-                    Console.WriteLine("Press any key to exit.");
-                    Thread.Sleep(TimeSpan.FromMilliseconds(settings.MeasurmentRefreshInterval));
+                    Thread.Sleep(TimeSpan.FromMilliseconds(settings.MeasurementRefreshInterval));
                 }
             }
         }
