@@ -1,13 +1,20 @@
 ﻿using System;
+using System.Collections.Concurrent;
 
 namespace MyApp // Note: actual namespace depends on the project name.
 {
     internal class Program
     {
+        private static ConcurrentDictionary<int, int> dataTypeCounter = new ConcurrentDictionary<int, int>();
+
+        private static byte[] data117 = new byte[64];
+        private static byte[] data255 = new byte[64];
+
         static async Task Main(string[] args)
         {
             //using (var device = new DeviceAccessorHid(0x2007)) // X series
             {
+                //using (var device2 = new DeviceAccessorHid(0x2007)) // X series //works for Z series, too???
                 using (var device2 = new DeviceAccessorHid()) // Z series
                 {
                     Console.WriteLine("Happily provided by cun83. Big thanks to HWiNFO's Martin for the amazing HWiNFO!");
@@ -19,6 +26,10 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
 
                     Console.WriteLine();
+
+                    Console.WriteLine("Press any key to start sensor reading.");
+                    Console.ReadKey();
+
                     Console.WriteLine("Press any key to exit.");
 
                     while (!Console.KeyAvailable)
@@ -26,14 +37,21 @@ namespace MyApp // Note: actual namespace depends on the project name.
                         var result = await device2.ReadDataAsync();
                         var data = result.Data;
 
+                        UpdateDataCounter(data[0]);
+
                         //Console.WriteLine($"Trans.:{result.BytesTransferred} | {data[15]} + {data[16]} = {data[15] + data[16]}");
 
                         //for now , 117 seems to indicate good data. at least for liquid
                         if (data[0] == 117)
                         {
-                            Console.Clear();
-                            PrintAllDataAsMatrix(data);
+                            data117 = data;
+                        } else
+                        {
+                            data255 = data;
                         }
+
+                        Console.Clear();
+                        PrintAllDataAsMatrix();
 
                         Thread.Sleep(TimeSpan.FromMilliseconds(100));
                     }
@@ -41,22 +59,49 @@ namespace MyApp // Note: actual namespace depends on the project name.
             }
         }
 
-        private static void PrintAllDataAsMatrix(byte[] data)
+        private static void UpdateDataCounter(byte v)
+        {
+            dataTypeCounter.AddOrUpdate(v, 0, (key, value) => value + 1);
+        }
+
+        private static void PrintAllDataAsMatrix()
         {
             for (int i = 0; i < 8; i++)
             {
                 Console.Write($"{i.ToString().PadLeft(2)}: ");
                 for (int j = 0; j < 8; j++)
                 {
-                    Console.Write($"{data[i * 8 + j].ToString().PadLeft(3)} ");
+                    Console.Write($"{data117[i * 8 + j].ToString().PadLeft(3)} ");
                 }
+
+                Console.Write("      ");
+                for (int j = 0; j < 8; j++)
+                {
+                    Console.Write($"{data255[i * 8 + j].ToString().PadLeft(3)} ");
+                }
+
+
                 Console.WriteLine();
             }
 
-            var liquidTempDataSource1 = data[15] + (data[16] / 10f);
-            var pumpRpm = data[15] + (data[16] / 10f);
+            var liquidTempDataSource1 = data117[15] + (data117[16] / 10f);
+            //var pumpRpm = data117[15] + (data117[16] / 10f);
+            var pumpPercent = data117[19];
+            var pumpSpeed = data117[18] << 8 | data117[17];
 
-            Console.WriteLine($"Liquid C° : {liquidTempDataSource1} Pump RPM: ");
+            var fanPercent = data117[25];
+            var fanSpeed = data117[24] << 8 | data117[23];
+
+            Console.WriteLine($"Liquid C° : {liquidTempDataSource1} Pump %: {pumpPercent} Fan %: {fanPercent}");
+            Console.WriteLine($"Pump speed: {pumpSpeed} Fan Speed: {fanSpeed}");
+
+            Console.WriteLine();
+            Console.WriteLine($"Data types:");
+
+            foreach (var kv in dataTypeCounter)
+            {
+                Console.WriteLine($"{kv.Key} : {kv.Value}");
+            }
         }
     }
 }
