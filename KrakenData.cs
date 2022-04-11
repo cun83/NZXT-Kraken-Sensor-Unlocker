@@ -1,5 +1,8 @@
 ﻿namespace NZXT_Kraken_Sensor_Unlocker
 {
+    /// <summary>
+    /// Measurements read from the Kraken device.
+    /// </summary>
     public class KrakenData
     {
         public KrakenData() { }

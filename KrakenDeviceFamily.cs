@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace NZXT_Kraken_Sensor_Unlocker
 {
     /// <summary>
-    /// USB product IDs for the Kraken
+    /// USB product IDs for the Kraken Gen4 families
     /// Ref: https://github.com/liquidctl/liquidctl/blob/main/liquidctl/driver/kraken3.py
     /// </summary>
     internal enum KrakenDeviceFamily

@@ -9,6 +9,9 @@ using Hid.Net.Windows;
 
 namespace NZXT_Kraken_Sensor_Unlocker
 {
+    /// <summary>
+    /// Connects to the Kraken HID device and reads it's data.
+    /// </summary>
     internal class KrakenHidDevice : IDisposable
     {
         private IDevice krakenDevice;
@@ -76,16 +79,16 @@ namespace NZXT_Kraken_Sensor_Unlocker
             await krakenDevice.InitializeAsync().ConfigureAwait(false);
 
             //TODO: needed for tool to work? seems to block until kraken gets initialized by NZXT CAM or HWiNFO
-            await UpdateDataAsync().ConfigureAwait(false);
+            await ReadDataAsync().ConfigureAwait(false);
 
             return true;
         }
 
-        public async Task UpdateDataAsync()
+        public async Task ReadDataAsync()
         {
             //Write and read the data to the device
             RawData = await krakenDevice.ReadAsync().ConfigureAwait(false);
-            if (RawData.Data[0] == 117) //magic number indicates the desired data is in the read bytes
+            if (RawData.Data[0] == 117) //magic number indicates the desired data is in the read byte[]
             {
                 this.KrakenData = new KrakenData(RawData.Data);
             }

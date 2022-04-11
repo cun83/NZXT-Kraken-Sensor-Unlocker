@@ -34,6 +34,12 @@ namespace NZXT_Kraken_Sensor_Unlocker
             }
         }
 
+        public void PrintRawDataAsMatrix(byte[] rawData)
+        {
+            Update(rawData);
+            PrintRawDataAsMatrix();
+        }
+
         public void PrintRawDataAsMatrix()
         {
             for (int i = 0; i < 8; i++)

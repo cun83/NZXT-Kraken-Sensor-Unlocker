@@ -30,15 +30,14 @@ namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the p
 
                 while (!Console.KeyAvailable)
                 {
-                    await device2.UpdateDataAsync();
+                    await device2.ReadDataAsync();
                     byte[]? data = device2.RawData.Data;
                     KrakenData? measurements = device2.KrakenData;
  
                     Console.Clear();
                     measurementWriter.Print(measurements);
                     Console.WriteLine();
-                    rawDataWriter.Update(data);
-                    rawDataWriter.PrintRawDataAsMatrix();                    
+                    rawDataWriter.PrintRawDataAsMatrix(data);                    
 
                     Thread.Sleep(TimeSpan.FromMilliseconds(100));
                 }
