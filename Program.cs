@@ -12,51 +12,47 @@ namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the p
 
         static async Task Main(string[] args)
         {
-            //using (var device = new DeviceAccessorHid(0x2007)) // X series
+            using (var device2 = new KrakenHidDevice(KrakenDeviceFamily.ZGen4)) // Z series
             {
-                //using (var device2 = new DeviceAccessorHid(0x2007)) // X series 
-                using (var device2 = new KrakenHidDevice(KrakenDeviceFamily.ZGen4)) // Z series
+                Console.WriteLine("Happily provided by cun83. Big thanks to HWiNFO's Martin for the amazing HWiNFO!");
+                Console.WriteLine();
+                Console.WriteLine("Preventing NZXT CAM from exclusive access. You can start NZXT CAM and HWiNFO now.");
+
+                await device2.ConnectToDeviceAsync();
+                Console.WriteLine("Done, everything is set up! After NZXT CAM has started completely you may exit this program.");
+
+
+                Console.WriteLine();
+
+                Console.WriteLine("Press any key to start sensor reading.");
+                Console.ReadKey();
+
+                Console.WriteLine("Press any key to exit.");
+
+                while (!Console.KeyAvailable)
                 {
-                    Console.WriteLine("Happily provided by cun83. Big thanks to HWiNFO's Martin for the amazing HWiNFO!");
-                    Console.WriteLine();
-                    Console.WriteLine("Preventing NZXT CAM from exclusive access. You can start NZXT CAM and HWiNFO now.");
-                    //await device.AccessDevice();
-                    await device2.ConnectToDeviceAsync();
-                    Console.WriteLine("Done, everything is set up! After NZXT CAM has started completely you may exit this program.");
+                    await device2.UpdateDataAsync();
+                    byte[]? data = device2.RawData.Data;
 
+                    UpdateDataCounter(data[0]);
 
-                    Console.WriteLine();
-
-                    Console.WriteLine("Press any key to start sensor reading.");
-                    Console.ReadKey();
-
-                    Console.WriteLine("Press any key to exit.");
-
-                    while (!Console.KeyAvailable)
+                    //117 seems to indicate good data
+                    if (data[0] == 117)
                     {
-                        await device2.UpdateDataAsync();
-                        byte[]? data = device2.RawData.Data;
-
-                        UpdateDataCounter(data[0]);
-
-                        //117 seems to indicate good data
-                        if (data[0] == 117)
-                        {
-                            data117 = data;
-                        }
-                        else
-                        {
-                            //no idea about what this data is. NZXT CAM seems to cause the to be read ~25% of the time
-                            data255 = data;
-                        }
-
-                        Console.Clear();
-                        PrintMeasurements(device2);
-                        Console.WriteLine();
-                        PrintRawDataAsMatrix();
-
-                        Thread.Sleep(TimeSpan.FromMilliseconds(100));
+                        data117 = data;
                     }
+                    else
+                    {
+                        //no idea about what this data is. NZXT CAM seems to cause the to be read ~25% of the time
+                        data255 = data;
+                    }
+
+                    Console.Clear();
+                    PrintMeasurements(device2);
+                    Console.WriteLine();
+                    PrintRawDataAsMatrix();
+
+                    Thread.Sleep(TimeSpan.FromMilliseconds(100));
                 }
             }
         }
