@@ -21,7 +21,7 @@ namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the p
                     Console.WriteLine();
                     Console.WriteLine("Preventing NZXT CAM from exclusive access. You can start NZXT CAM and HWiNFO now.");
                     //await device.AccessDevice();
-                    await device2.AccessDevice();
+                    await device2.ConnectToDeviceAsync();
                     Console.WriteLine("Done, everything is set up! After NZXT CAM has started completely you may exit this program.");
 
 
@@ -34,8 +34,8 @@ namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the p
 
                     while (!Console.KeyAvailable)
                     {
-                        var result = await device2.UpdateDataAsync();
-                        var data = result.Data;
+                        await device2.UpdateDataAsync();
+                        byte[]? data = device2.RawData.Data;
 
                         UpdateDataCounter(data[0]);
 
@@ -46,11 +46,14 @@ namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the p
                         }
                         else
                         {
+                            //no idea about what this data is. NZXT CAM seems to cause the to be read ~25% of the time
                             data255 = data;
                         }
 
                         Console.Clear();
-                        PrintAllDataAsMatrix();
+                        PrintMeasurements(device2);
+                        Console.WriteLine();
+                        PrintRawDataAsMatrix();
 
                         Thread.Sleep(TimeSpan.FromMilliseconds(100));
                     }
@@ -63,7 +66,16 @@ namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the p
             dataTypeCounter.AddOrUpdate(v, 0, (key, value) => value + 1);
         }
 
-        private static void PrintAllDataAsMatrix()
+        private static void PrintMeasurements(KrakenHidDevice device)
+        {
+            KrakenData? data = device.KrakenData;
+
+            Console.WriteLine($"Liquid C° : {data?.LiquidTempC}");
+            Console.WriteLine($"Pump %: {data?.PumpDutyPercent} speed: {data?.PumpSpeedRpm}");
+            Console.WriteLine($"Fan %: {data?.FanDutyPercent} speed: {data?.FanSpeedRpm}");
+        }
+
+        private static void PrintRawDataAsMatrix()
         {
             for (int i = 0; i < 8; i++)
             {
@@ -82,18 +94,6 @@ namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the p
 
                 Console.WriteLine();
             }
-
-            var liquidTempDataSource1 = data117[15] + (data117[16] / 10f);
-
-            var pumpPercent = data117[19];
-            var pumpSpeed = data117[18] << 8 | data117[17];
-
-            var fanPercent = data117[25];
-            var fanSpeed = data117[24] << 8 | data117[23];
-
-            Console.WriteLine($"Liquid C° : {liquidTempDataSource1}");
-            Console.WriteLine($"Pump %: {pumpPercent} speed: {pumpSpeed}");
-            Console.WriteLine($"Fan %: {fanPercent} speed: {fanSpeed}");
 
             Console.WriteLine();
             Console.WriteLine($"Data types:");

@@ -14,12 +14,35 @@ namespace NZXT_Kraken_Sensor_Unlocker
         private IDevice krakenDevice;
         private readonly KrakenDeviceFamily deviceFamily;
 
+
+        private TransferResult rawData;
+
+        public TransferResult RawData
+        {
+            get
+            {
+                return rawData;
+            }
+            private set
+            {
+                rawData = value;
+            }
+        }
+
+        private KrakenData krakenData;
+        public KrakenData KrakenData
+        {
+            get => krakenData;
+            private set => krakenData = value;
+        }
+
         public KrakenHidDevice(KrakenDeviceFamily deviceFamily) //
         {
             this.deviceFamily = deviceFamily;
+            this.krakenData = new KrakenData();
         }
 
-        public async Task<bool> AccessDevice()
+        public async Task<bool> ConnectToDeviceAsync()
         {
             //Create logger factory that will pick up all logs and output them in the debug output window
             var loggerFactory = LoggerFactory.Create((builder) =>
@@ -58,13 +81,16 @@ namespace NZXT_Kraken_Sensor_Unlocker
             return true;
         }
 
-        public async Task<TransferResult> UpdateDataAsync()
+        public async Task UpdateDataAsync()
         {
-
             //Write and read the data to the device
-            TransferResult readBuffer = await krakenDevice.ReadAsync().ConfigureAwait(false);
-            return readBuffer;
+            RawData = await krakenDevice.ReadAsync().ConfigureAwait(false);
+            if (RawData.Data[0] == 117) //magic number indicates the desired data is in the read bytes
+            {
+                this.KrakenData = new KrakenData(RawData.Data);
+            }
         }
+
 
         public void Dispose()
         {
