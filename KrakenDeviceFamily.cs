@@ -13,12 +13,12 @@ namespace NZXT_Kraken_Sensor_Unlocker
     internal enum KrakenDeviceFamily
     {
         /// <summary>
-        /// Z53, Z63, Z73 family.
+        /// Z53, Z63, Z73
         /// </summary>
         ZGen4 = 0x3008,
 
         /// <summary>
-        /// X53, X63 or X73 family. 
+        /// X53, X63 or X73 
         /// </summary>
         XGen4 = 0x2007
     }

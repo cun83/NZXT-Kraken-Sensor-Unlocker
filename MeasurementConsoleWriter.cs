@@ -14,8 +14,8 @@ namespace NZXT_Kraken_Sensor_Unlocker
         public void Print(KrakenData data)
         {
             Console.WriteLine($"Liquid C° : {data?.LiquidTempC}");
-            Console.WriteLine($"Pump %: {data?.PumpDutyPercent} speed: {data?.PumpSpeedRpm}");
-            Console.WriteLine($"Fan %: {data?.FanDutyPercent} speed: {data?.FanSpeedRpm}");
+            Console.WriteLine($"Pump %: {data?.PumpDutyPercent} speed RPM: {data?.PumpSpeedRpm}");
+            Console.WriteLine($"Fan %: {data?.FanDutyPercent} speed RPM: {data?.FanSpeedRpm}");
         }
     }
 }

@@ -15,6 +15,7 @@ namespace NZXT_Kraken_Sensor_Unlocker
     internal class KrakenHidDevice : IDisposable
     {
         private IDevice krakenDevice;
+        private readonly Settings settings;
         private readonly KrakenDeviceFamily deviceFamily;
 
 
@@ -39,9 +40,10 @@ namespace NZXT_Kraken_Sensor_Unlocker
             private set => krakenData = value;
         }
 
-        public KrakenHidDevice(KrakenDeviceFamily deviceFamily) //
+        public KrakenHidDevice(Settings settings) //
         {
-            this.deviceFamily = deviceFamily;
+            this.settings = settings;
+            this.deviceFamily = settings.KrakenDeviceFamily;
             this.krakenData = new KrakenData();
         }
 
@@ -50,8 +52,8 @@ namespace NZXT_Kraken_Sensor_Unlocker
             //Create logger factory that will pick up all logs and output them in the debug output window
             var loggerFactory = LoggerFactory.Create((builder) =>
             {
-                //builder.SetMinimumLevel(LogLevel.Trace);
-                builder.SetMinimumLevel(LogLevel.Error);
+                var logLevel = settings.ShowDebugOutput ? LogLevel.Trace : LogLevel.Error;
+                builder.SetMinimumLevel(logLevel);
                 builder.AddConsole();
             });
 
@@ -74,6 +76,10 @@ namespace NZXT_Kraken_Sensor_Unlocker
 
             //Get the device from its definition
             this.krakenDevice = await hidFactory.GetDeviceAsync(deviceDefinitions.First()).ConfigureAwait(false);
+
+            //Debug output reports: 
+            // Hid.Net.Windows.WindowsHidApiService[0]
+            // Calling CreateFile Area: ApiService for DeviceId: \\?\hid#vid_1e71&pid_3008&mi_01#8&2751026a&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}. Desired Access: GenericWrite, GenericRead. Share mode: 3. Creation Disposition: 3
 
             //Initialize the device
             await krakenDevice.InitializeAsync().ConfigureAwait(false);

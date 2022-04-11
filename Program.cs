@@ -11,13 +11,18 @@ namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the p
 
         static async Task Main(string[] args)
         {
-            using (var device2 = new KrakenHidDevice(KrakenDeviceFamily.ZGen4)) // Z series
+            var settings = new Settings()
+            {
+                KrakenDeviceFamily = KrakenDeviceFamily.ZGen4
+            };
+
+            using (var kraken = new KrakenHidDevice(settings)) // Z series
             {
                 Console.WriteLine("Happily provided by cun83. Big thanks to HWiNFO's Martin for the amazing HWiNFO!");
                 Console.WriteLine();
                 Console.WriteLine("Preventing NZXT CAM from exclusive access. You can start NZXT CAM and HWiNFO now.");
 
-                await device2.ConnectToDeviceAsync();
+                await kraken.ConnectToDeviceAsync();
                 Console.WriteLine("Done, everything is set up! After NZXT CAM has started completely you may exit this program.");
 
 
@@ -30,20 +35,28 @@ namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the p
 
                 while (!Console.KeyAvailable)
                 {
-                    await device2.ReadDataAsync();
-                    byte[]? data = device2.RawData.Data;
-                    KrakenData? measurements = device2.KrakenData;
- 
-                    Console.Clear();
+                    await kraken.ReadDataAsync();
+                    byte[]? data = kraken.RawData.Data;
+                    KrakenData? measurements = kraken.KrakenData;
+
+                    if (settings.ClearTerminalOnRefresh)
+                    {
+                        Console.Clear();
+                    }
+
                     measurementWriter.Print(measurements);
-                    Console.WriteLine();
-                    rawDataWriter.PrintRawDataAsMatrix(data);                    
+
+                    if (settings.ShowRawDataOutput)
+                    {
+                        Console.WriteLine();
+                        rawDataWriter.PrintRawDataAsMatrix(data);
+                    }
 
                     Thread.Sleep(TimeSpan.FromMilliseconds(100));
                 }
             }
         }
 
-     
+
     }
 }
