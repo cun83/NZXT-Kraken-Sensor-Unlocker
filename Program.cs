@@ -2,6 +2,7 @@
 using CommandLine.Text;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 [assembly: System.Reflection.AssemblyVersion("0.3.*")]
 
@@ -48,8 +49,12 @@ namespace cun83.NzxtKrakenSensorUnlocker
 
                 await kraken.ConnectToDeviceAsync();
                 Console.WriteLine("Done, everything is set up! After NZXT CAM has started completely you may exit this program.");
-                Console.WriteLine("Press any key to exit.");
 
+                DateTime timeToStopAfter = settings.AutoCloseAfterSeconds > 0 ?
+                    DateTime.Now.Add(TimeSpan.FromSeconds(settings.AutoCloseAfterSeconds))
+                    : DateTime.MaxValue;
+                var anyKeyToExitText = $"Press any key to exit.{(settings.AutoCloseAfterSeconds > 0 ? $" Will exit automatically at {timeToStopAfter}" : string.Empty)}";
+                Console.WriteLine(anyKeyToExitText);
 
                 Console.WriteLine();
 
@@ -59,7 +64,7 @@ namespace cun83.NzxtKrakenSensorUnlocker
                     Console.ReadKey();
                 }
 
-                while (!Console.KeyAvailable)
+                while (!Console.KeyAvailable && (DateTime.Now < timeToStopAfter))
                 {
                     if (settings.MeasurementRefreshInterval > 0)
                     {
@@ -81,7 +86,7 @@ namespace cun83.NzxtKrakenSensorUnlocker
                         }
 
                         Console.WriteLine();
-                        Console.WriteLine("Press any key to exit.");
+                        Console.WriteLine(anyKeyToExitText);
                     }
 
                     Thread.Sleep(TimeSpan.FromMilliseconds(settings.MeasurementRefreshInterval));

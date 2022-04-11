@@ -53,7 +53,7 @@ namespace cun83.NzxtKrakenSensorUnlocker
             if (deviceDefinitions.Count == 0)
             {
                 //No devices were found
-                loggerFactory.CreateLogger<object>().LogCritical("!!!NO DEVICE FOUND!!!");
+                loggerFactory.CreateLogger<object>().LogCritical("DEVICE NOT FOUND. Are you using the correct parameters?");
                 return false;
             }
 

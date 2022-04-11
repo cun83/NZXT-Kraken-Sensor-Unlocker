@@ -12,7 +12,7 @@ namespace cun83.NzxtKrakenSensorUnlocker
         /// <summary>
         /// The device you are using: Either Kraken X oder Z family.
         /// </summary>
-        [Option('k', nameof(KrakenDeviceFamily), Required = true, HelpText = "The device you are using: Either X oder Z family.")]
+        [Option('k', nameof(KrakenDeviceFamily), Required = true, HelpText = "The kraken device you are using: Either X familiy (X53/X63/X73) oder Z family (Z53/Z63/Z73).")]
         public KrakenDeviceFamily KrakenDeviceFamily { get; internal set; }
 
         /// <summary>
@@ -28,9 +28,15 @@ namespace cun83.NzxtKrakenSensorUnlocker
         public bool? AutoStartReadingMeasurement { get; set; } = true;
 
         /// <summary>
+        /// Automatically exit after n seconds. Useful for running this program via autostart, to exit after a while once CAM has started in non-greedy-mode. Use 0 to disable autoclose.
+        /// </summary>
+        [Option('c', nameof(AutoCloseAfterSeconds), Required = false, Default = (uint)0, HelpText = "utomatically exit after n seconds. Useful for running this program via autostart, to exit after a while once CAM has started in non-greedy-mode. Use 0 to disable autoclose.")]
+        public uint AutoCloseAfterSeconds { get; set; } = 0;
+
+        /// <summary>
         /// Clears console output on every refresh. Useful for measurement/raw data display. Disable to read debug logs.
         /// </summary>
-        [Option('c', nameof(ClearTerminalOnRefresh), Required = false, Default = true, HelpText = "Clears console output on every refresh. Useful for measurement/raw data display. Disable to read debug logs.")]
+        [Option('t', nameof(ClearTerminalOnRefresh), Required = false, Default = true, HelpText = "Clears console output on every refresh. Useful for measurement/raw data display. Disable to read debug logs.")]
         public bool? ClearTerminalOnRefresh { get; set; } = true;
 
         /// <summary>
