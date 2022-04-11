@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Usb.Net.Windows;
 using Hid.Net.Windows;
 
-namespace NZXT_Kraken_Sensor_Unlocker
+namespace cun83.NzxtKrakenSensorUnlocker
 {
     /// <summary>
     /// Connects to the Kraken HID device and reads it's data.
@@ -19,32 +19,15 @@ namespace NZXT_Kraken_Sensor_Unlocker
         private readonly KrakenDeviceFamily deviceFamily;
 
 
-        private TransferResult rawData;
+        public TransferResult RawData { get; private set; }
 
-        public TransferResult RawData
-        {
-            get
-            {
-                return rawData;
-            }
-            private set
-            {
-                rawData = value;
-            }
-        }
-
-        private KrakenData krakenData;
-        public KrakenData KrakenData
-        {
-            get => krakenData;
-            private set => krakenData = value;
-        }
+        public KrakenData KrakenData { get; private set; }
 
         public KrakenHidDevice(Settings settings) //
         {
             this.settings = settings;
             this.deviceFamily = settings.KrakenDeviceFamily;
-            this.krakenData = new KrakenData();
+            this.KrakenData = new KrakenData();
         }
 
         public async Task<bool> ConnectToDeviceAsync()
@@ -61,7 +44,7 @@ namespace NZXT_Kraken_Sensor_Unlocker
 
             //Register the factory for creating Hid devices. 
             var hidFactory =
-                new FilterDeviceDefinition(vendorId: 0x1E71, productId: (uint)deviceFamily, label: "NZXT Kraken (X53, X63, X73 / Z53, Z63, Z73)", usagePage: null)//, usagePage: 65280)
+                new FilterDeviceDefinition(vendorId: 0x1E71, productId: (uint)deviceFamily, label: "NZXT Kraken (X53/X63/X73 or Z53/Z63/Z73)", usagePage: null)//, usagePage: 65280)
                 .CreateWindowsHidDeviceFactory(loggerFactory);
 
             //Get connected device definitions
@@ -75,7 +58,7 @@ namespace NZXT_Kraken_Sensor_Unlocker
             }
 
             //Get the device from its definition
-            this.krakenDevice = await hidFactory.GetDeviceAsync(deviceDefinitions.First()).ConfigureAwait(false);
+            krakenDevice = await hidFactory.GetDeviceAsync(deviceDefinitions.First()).ConfigureAwait(false);
 
             //Debug output reports: 
             // Hid.Net.Windows.WindowsHidApiService[0]

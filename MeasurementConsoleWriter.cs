@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NZXT_Kraken_Sensor_Unlocker
+namespace cun83.NzxtKrakenSensorUnlocker
 {
     /// <summary>
     /// Prints Temp/RPM/Duty Cycle data to Console

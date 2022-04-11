@@ -1,4 +1,4 @@
-﻿namespace NZXT_Kraken_Sensor_Unlocker
+﻿namespace cun83.NzxtKrakenSensorUnlocker
 {
     /// <summary>
     /// Measurements read from the Kraken device.

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the project name.
+namespace cun83.NzxtKrakenSensorUnlocker
 {
     internal class Program
     {
@@ -28,10 +28,11 @@ namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the p
 
                 Console.WriteLine();
 
-                Console.WriteLine("Press any key to start sensor reading.");
-                Console.ReadKey();
-
-                Console.WriteLine("Press any key to exit.");
+                if (!settings.AutoStartReadingMeasurement)
+                {
+                    Console.WriteLine("Press any key to start sensor reading.");
+                    Console.ReadKey();
+                }
 
                 while (!Console.KeyAvailable)
                 {
@@ -52,6 +53,8 @@ namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the p
                         rawDataWriter.PrintRawDataAsMatrix(data);
                     }
 
+                    Console.WriteLine();
+                    Console.WriteLine("Press any key to exit.");
                     Thread.Sleep(TimeSpan.FromMilliseconds(100));
                 }
             }

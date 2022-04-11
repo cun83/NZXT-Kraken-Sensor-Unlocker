@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NZXT_Kraken_Sensor_Unlocker
+namespace cun83.NzxtKrakenSensorUnlocker
 {
     internal class Settings
     {
@@ -22,6 +22,11 @@ namespace NZXT_Kraken_Sensor_Unlocker
         /// Clears console output on every refresh. Useful for measurement/raw data display. Disable to read debug logs.
         /// </summary>
         public bool ClearTerminalOnRefresh { get; set; } = true;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool AutoStartReadingMeasurement { get; set; } = true;
 
         /// <summary>
         /// The device you are using: Either X oder Z family.
