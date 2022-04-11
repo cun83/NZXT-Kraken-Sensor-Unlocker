@@ -39,13 +39,12 @@ namespace MyApp // Note: actual namespace depends on the project name.
 
                         UpdateDataCounter(data[0]);
 
-                        //Console.WriteLine($"Trans.:{result.BytesTransferred} | {data[15]} + {data[16]} = {data[15] + data[16]}");
-
-                        //for now , 117 seems to indicate good data. at least for liquid
+                        //117 seems to indicate good data
                         if (data[0] == 117)
                         {
                             data117 = data;
-                        } else
+                        }
+                        else
                         {
                             data255 = data;
                         }
@@ -85,15 +84,16 @@ namespace MyApp // Note: actual namespace depends on the project name.
             }
 
             var liquidTempDataSource1 = data117[15] + (data117[16] / 10f);
-            //var pumpRpm = data117[15] + (data117[16] / 10f);
+
             var pumpPercent = data117[19];
             var pumpSpeed = data117[18] << 8 | data117[17];
 
             var fanPercent = data117[25];
             var fanSpeed = data117[24] << 8 | data117[23];
 
-            Console.WriteLine($"Liquid C° : {liquidTempDataSource1} Pump %: {pumpPercent} Fan %: {fanPercent}");
-            Console.WriteLine($"Pump speed: {pumpSpeed} Fan Speed: {fanSpeed}");
+            Console.WriteLine($"Liquid C° : {liquidTempDataSource1}");
+            Console.WriteLine($"Pump %: {pumpPercent} speed: {pumpSpeed}");
+            Console.WriteLine($"Fan %: {fanPercent} speed: {fanSpeed}");
 
             Console.WriteLine();
             Console.WriteLine($"Data types:");
