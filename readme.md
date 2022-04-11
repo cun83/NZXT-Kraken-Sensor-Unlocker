@@ -6,7 +6,7 @@ Thanks to the hints in [this old thread](https://www.hwinfo.com/forum/threads/la
 * HWInfo Forum thread: https://www.hwinfo.com/forum/threads/nzxt-kraken-hwinfo-nzxt-cam-finally-defeated.8009/ 
 * Thanks to the folks over at [liquidctl](https://github.com/liquidctl/liquidctl)! Their driver code spared me reverse engineering the Kraken protocol for reading data
 
-## Download: TODO
+## Download: Go to the [releases page](https://github.com/cun83/NZXT-Kraken-Sensor-Unlocker/releases).
 
 ## Dependencies:
 
