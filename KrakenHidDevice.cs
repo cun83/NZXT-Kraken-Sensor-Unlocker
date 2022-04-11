@@ -35,7 +35,7 @@ namespace cun83.NzxtKrakenSensorUnlocker
             //Create logger factory that will pick up all logs and output them in the debug output window
             var loggerFactory = LoggerFactory.Create((builder) =>
             {
-                var logLevel = settings.ShowDebugOutput ? LogLevel.Trace : LogLevel.Error;
+                var logLevel = settings.ShowDebugOutput.Value ? LogLevel.Trace : LogLevel.Error;
                 builder.SetMinimumLevel(logLevel);
                 builder.AddConsole();
             });

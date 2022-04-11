@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NZXT-Kraken-Sensor-Unlocker": {
+      "commandName": "Project",
+      "commandLineArgs": "--k Z"
+    }
+  }
+}

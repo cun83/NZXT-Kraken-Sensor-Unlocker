@@ -1,5 +1,9 @@
-﻿using System;
+﻿using CommandLine;
+using CommandLine.Text;
+using System;
 using System.Collections.Concurrent;
+
+[assembly: System.Reflection.AssemblyVersion("0.3.*")]
 
 namespace cun83.NzxtKrakenSensorUnlocker
 {
@@ -11,11 +15,30 @@ namespace cun83.NzxtKrakenSensorUnlocker
 
         static async Task Main(string[] args)
         {
-            var settings = new Settings()
+            var parser = new CommandLine.Parser(cfg =>
             {
-                KrakenDeviceFamily = KrakenDeviceFamily.ZGen4
-            };
+                cfg.CaseSensitive = false;
+                cfg.CaseInsensitiveEnumValues = true;
+            });
 
+            ParserResult<Settings>? parserResult = parser.ParseArguments<Settings>(args);
+
+            parserResult.WithNotParsed(errors => HandleParameterErrors(parserResult, errors));
+            await parserResult.WithParsedAsync(Run);
+        }
+
+        private static void HandleParameterErrors(ParserResult<Settings>? parserResult, IEnumerable<Error> obj)
+        {
+            HelpText? helpText = HelpText.AutoBuild(parserResult, h =>
+            {
+                h.AddEnumValuesToHelpText = true;
+                return h;
+            });
+            Console.WriteLine(helpText);
+        }
+
+        private static async Task Run(Settings settings)
+        {
             using (var kraken = new KrakenHidDevice(settings)) // Z series
             {
                 Console.WriteLine("Happily provided by cun83. Big thanks to HWiNFO's Martin for the amazing HWiNFO!");
@@ -28,7 +51,7 @@ namespace cun83.NzxtKrakenSensorUnlocker
 
                 Console.WriteLine();
 
-                if (!settings.AutoStartReadingMeasurement)
+                if (!settings.AutoStartReadingMeasurement.Value)
                 {
                     Console.WriteLine("Press any key to start sensor reading.");
                     Console.ReadKey();
@@ -40,14 +63,14 @@ namespace cun83.NzxtKrakenSensorUnlocker
                     byte[]? data = kraken.RawData.Data;
                     KrakenData? measurements = kraken.KrakenData;
 
-                    if (settings.ClearTerminalOnRefresh)
+                    if (settings.ClearTerminalOnRefresh.Value)
                     {
                         Console.Clear();
                     }
 
                     measurementWriter.Print(measurements);
 
-                    if (settings.ShowRawDataOutput)
+                    if (settings.ShowRawDataOutput.Value)
                     {
                         Console.WriteLine();
                         rawDataWriter.PrintRawDataAsMatrix(data);
@@ -55,11 +78,9 @@ namespace cun83.NzxtKrakenSensorUnlocker
 
                     Console.WriteLine();
                     Console.WriteLine("Press any key to exit.");
-                    Thread.Sleep(TimeSpan.FromMilliseconds(100));
+                    Thread.Sleep(TimeSpan.FromMilliseconds(settings.MeasurmentRefreshInterval));
                 }
             }
         }
-
-
     }
 }

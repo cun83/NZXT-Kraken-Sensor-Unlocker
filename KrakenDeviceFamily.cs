@@ -15,11 +15,11 @@ namespace cun83.NzxtKrakenSensorUnlocker
         /// <summary>
         /// Z53, Z63, Z73
         /// </summary>
-        ZGen4 = 0x3008,
+        Z = 0x3008,
 
         /// <summary>
         /// X53, X63 or X73 
         /// </summary>
-        XGen4 = 0x2007
+        X = 0x2007
     }
 }
