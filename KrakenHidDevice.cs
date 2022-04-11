@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 using Usb.Net.Windows;
 using Hid.Net.Windows;
 
-namespace MyApp
+namespace NZXT_Kraken_Sensor_Unlocker
 {
     internal class KrakenHidDevice : IDisposable
     {
-        private readonly uint productId;
         private IDevice krakenDevice;
+        private readonly KrakenDeviceFamily deviceFamily;
 
-        public KrakenHidDevice(uint productId = 0x3008) //Z53, Z63, Z73 family. Use 0x2007 foo X53, X63 or X73 family. Ref: https://github.com/liquidctl/liquidctl/blob/main/liquidctl/driver/kraken3.py
+        public KrakenHidDevice(KrakenDeviceFamily deviceFamily) //
         {
-            this.productId = productId;
+            this.deviceFamily = deviceFamily;
         }
 
         public async Task<bool> AccessDevice()
@@ -33,7 +33,7 @@ namespace MyApp
 
             //Register the factory for creating Hid devices. 
             var hidFactory =
-                new FilterDeviceDefinition(vendorId: 0x1E71, productId: productId, label: "NZXT Kraken (X53, X63, X73 / Z53, Z63, Z73)", usagePage: null)//, usagePage: 65280)
+                new FilterDeviceDefinition(vendorId: 0x1E71, productId: (uint)deviceFamily, label: "NZXT Kraken (X53, X63, X73 / Z53, Z63, Z73)", usagePage: null)//, usagePage: 65280)
                 .CreateWindowsHidDeviceFactory(loggerFactory);
 
             //Get connected device definitions
@@ -68,7 +68,7 @@ namespace MyApp
 
         public void Dispose()
         {
-            if(this.krakenDevice != null)
+            if (this.krakenDevice != null)
             {
                 this.krakenDevice.Close();
                 this.krakenDevice.Dispose();

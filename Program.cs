@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-namespace MyApp // Note: actual namespace depends on the project name.
+namespace NZXT_Kraken_Sensor_Unlocker // Note: actual namespace depends on the project name.
 {
     internal class Program
     {
@@ -15,7 +15,7 @@ namespace MyApp // Note: actual namespace depends on the project name.
             //using (var device = new DeviceAccessorHid(0x2007)) // X series
             {
                 //using (var device2 = new DeviceAccessorHid(0x2007)) // X series 
-                using (var device2 = new KrakenHidDevice()) // Z series
+                using (var device2 = new KrakenHidDevice(KrakenDeviceFamily.ZGen4)) // Z series
                 {
                     Console.WriteLine("Happily provided by cun83. Big thanks to HWiNFO's Martin for the amazing HWiNFO!");
                     Console.WriteLine();
