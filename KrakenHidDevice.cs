@@ -9,12 +9,12 @@ using Hid.Net.Windows;
 
 namespace MyApp
 {
-    internal class DeviceAccessorHid : IDisposable
+    internal class KrakenHidDevice : IDisposable
     {
         private readonly uint productId;
         private IDevice krakenDevice;
 
-        public DeviceAccessorHid(uint productId = 0x3008) //Z53, Z63, Z73 family. Use 0x2007 foo X53, X63 or X73 family. Ref: https://github.com/liquidctl/liquidctl/blob/main/liquidctl/driver/kraken3.py
+        public KrakenHidDevice(uint productId = 0x3008) //Z53, Z63, Z73 family. Use 0x2007 foo X53, X63 or X73 family. Ref: https://github.com/liquidctl/liquidctl/blob/main/liquidctl/driver/kraken3.py
         {
             this.productId = productId;
         }
